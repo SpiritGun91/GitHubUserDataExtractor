@@ -8,7 +8,6 @@ from requests.exceptions import HTTPError, RequestException
 
 
 class colors:
-
     """ANSI color constants used for terminal output."""
 
     HEADER = Fore.MAGENTA
