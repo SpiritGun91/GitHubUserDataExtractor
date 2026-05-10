@@ -7,7 +7,7 @@ from colorama import Fore, Style
 from requests.exceptions import HTTPError, RequestException
 
 
-class colors:  # pylint: disable=invalid-name,too-few-public-methods
+class colors:  # pylint: disable=invalid-name,too-few-public-methods  # noqa: D203,D211
     """ANSI color constants used for terminal output."""
 
     HEADER = Fore.MAGENTA
@@ -37,7 +37,7 @@ def get_auth_headers():
     return {}
 
 
-def fetch_as_data_uri(url):
+def fetch_as_data_uri(url):  # noqa: D212,D213
     """Fetch a remote image and return it as a base64 data URI.
 
     Embeds the image directly in the HTML file (needed when the page is served
