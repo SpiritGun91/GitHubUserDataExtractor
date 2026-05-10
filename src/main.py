@@ -22,7 +22,9 @@ def display_banner():
         f"Website  : {colors.CYAN}https://quantumbytestudios.in{colors.ENDC}\n")
 
 
-TOKEN_FILE = os.path.join(os.path.dirname(__file__), ".github_token")
+TOKEN_DIR = os.path.join(os.path.expanduser("~"), ".config", "githubuserdataextractor")
+TOKEN_FILE = os.path.join(TOKEN_DIR, "github_token")
+LEGACY_TOKEN_FILE = os.path.join(os.path.dirname(__file__), ".github_token")
 
 
 def load_saved_token():
@@ -31,11 +33,19 @@ def load_saved_token():
         with open(TOKEN_FILE, "r", encoding="utf-8") as f:
             return f.read().strip()
     except FileNotFoundError:
-        return ""
+        try:
+            with open(LEGACY_TOKEN_FILE, "r", encoding="utf-8") as f:
+                token = f.read().strip()
+            if token:
+                save_token(token)
+            return token
+        except FileNotFoundError:
+            return ""
 
 
 def save_token(token):
     """Persist the supplied GitHub token to the token file."""
+    os.makedirs(TOKEN_DIR, exist_ok=True)
     with open(TOKEN_FILE, "w", encoding="utf-8") as f:
         f.write(token)
 
