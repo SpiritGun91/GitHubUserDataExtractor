@@ -60,8 +60,8 @@ def showHTMLWindow():
     browser = HTMLViewer(html_file_path)
     browser.show()
 
-    # Execute the application and ensure proper exit
-    sys.exit(app.exec_())
+    # Execute the application and capture the exit code so cleanup can run.
+    exit_code = app.exec_()
 
     # Delete the HTML file after closing the viewer
     try:
@@ -70,3 +70,6 @@ def showHTMLWindow():
         print(f"Warning: HTML file '{html_file_path}' not found to delete.")
     except OSError as e:
         print(f"Error deleting HTML file: {e}")
+
+    # Exit with the same code returned by Qt.
+    sys.exit(exit_code)

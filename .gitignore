@@ -3,6 +3,7 @@ __pycache__/
 received_events/
 *.html
 src/.github_token
+.codacy/
 
 
 #Ignore vscode AI rules
