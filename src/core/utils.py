@@ -34,7 +34,8 @@ def get_auth_headers():
 
 
 def fetch_as_data_uri(url):
-    """Fetch a remote image and return it as a base64 data URI.
+    """
+    Fetch a remote image and return it as a base64 data URI.
 
     Embeds the image directly in the HTML file (needed when the page is served
     via file:// and WebKit would otherwise block external requests).
