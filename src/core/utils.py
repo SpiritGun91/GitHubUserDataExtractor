@@ -1,3 +1,4 @@
+"""Shared helpers for fetching GitHub data and rendering the HTML report."""
 import base64
 import os
 import platform
@@ -7,6 +8,8 @@ from requests.exceptions import HTTPError, RequestException
 
 
 class colors:
+    """ANSI color constants used for terminal output."""
+
     HEADER = Fore.MAGENTA
     BLUE = Fore.BLUE
     CYAN = Fore.CYAN
@@ -19,7 +22,7 @@ class colors:
 
 
 def clear():
-    # Avoid spawning shell commands for terminal clear operations.
+    """Clear the terminal screen without spawning a shell."""
     if platform.system() == "Windows":
         print("\033[2J\033[H", end="")
     else:
@@ -27,6 +30,7 @@ def clear():
 
 
 def get_auth_headers():
+    """Return the Authorization header dict if a GitHub token is set."""
     token = os.environ.get("GITHUB_TOKEN", "").strip()
     if token:
         return {"Authorization": f"Bearer {token}"}
@@ -51,6 +55,7 @@ def fetch_as_data_uri(url):
 
 
 def fetch_and_print_data(username):
+    """Fetch the GitHub user profile and print each field to the terminal."""
     print(f"Fetching data for user: {colors.FAIL}{username}{colors.ENDC}")
     url = f"https://api.github.com/users/{username}"
     try:
@@ -69,12 +74,14 @@ def fetch_and_print_data(username):
 
 
 def show_events_and_graphs(urls):
+    """Print a confirmation that graphs are available in the report."""
     print(
         f"\nGraphs available in Received Events [{colors.GREEN}✓{colors.ENDC}]"
     )
 
 
 def generate_html_event_row(avatar, login, event_type, repo_name, repo_url, badge_class, action_text):
+    """Return the HTML markup for a single received-event row."""
     return f"""
     <div class="event-row d-flex align-items-center shadow-sm">
         <img src="{avatar}" class="profile-picture me-3" alt="Avatar of {login}">
@@ -87,6 +94,7 @@ def generate_html_event_row(avatar, login, event_type, repo_name, repo_url, badg
 
 
 def create_and_display_html_user_events(username, urls):
+    """Build the user's HTML report from profile data and received events."""
     events_url = f"https://api.github.com/users/{username}/received_events"
     html_path = ".temp/index.html"
 

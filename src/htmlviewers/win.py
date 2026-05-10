@@ -1,3 +1,4 @@
+"""Windows HTML viewer backed by PyQt5 QWebEngineView."""
 import sys
 import os
 from PyQt5.QtCore import QUrl
@@ -6,7 +7,10 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 
 class HTMLViewer(QMainWindow):
+    """Main window that renders the generated HTML report."""
+
     def __init__(self, html_path):
+        """Initialize the viewer window for the given HTML file path."""
         super().__init__()
         self.setWindowTitle("GitHubUserDataExtractor - HTML Viewer")
 
@@ -46,7 +50,7 @@ class HTMLViewer(QMainWindow):
 
 
 def showHTMLWindow():
-    """Launches the PyQt5 application to display the HTML content."""
+    """Launch the PyQt5 application and display the HTML content."""
     app = QApplication(sys.argv)
 
     # Absolute path to the HTML file

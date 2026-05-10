@@ -1,3 +1,4 @@
+"""Entry point for the GitHub User Data Extractor CLI."""
 import os
 import sys
 import platform
@@ -6,6 +7,7 @@ from core.utils import colors
 
 
 def display_banner():
+    """Print the application banner and developer credits."""
     session.clear()
     banner = r'''
   ____ _ _   _   _       _       _   _                 ____        _
@@ -24,6 +26,7 @@ TOKEN_FILE = os.path.join(os.path.dirname(__file__), ".github_token")
 
 
 def load_saved_token():
+    """Return the GitHub token persisted on disk, or an empty string."""
     try:
         with open(TOKEN_FILE, "r", encoding="utf-8") as f:
             return f.read().strip()
@@ -32,11 +35,13 @@ def load_saved_token():
 
 
 def save_token(token):
+    """Persist the supplied GitHub token to the token file."""
     with open(TOKEN_FILE, "w", encoding="utf-8") as f:
         f.write(token)
 
 
 def prompt_for_token():
+    """Load a saved token or prompt the user for a new one."""
     saved = load_saved_token()
     if saved:
         os.environ["GITHUB_TOKEN"] = saved
@@ -56,6 +61,7 @@ def prompt_for_token():
 
 
 def get_username():
+    """Prompt for and return a non-empty GitHub username."""
     username = input(
         f"Enter a GitHub Username: {colors.WARNING}").strip().lower()
     print(colors.ENDC, end="")
@@ -69,6 +75,7 @@ def get_username():
 
 
 def get_stat_urls(username):
+    """Return the mapping of stat-card URLs for the given username."""
     return {
         "mostUsedLanguages": f"https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username={username}&theme=dark",
         "githubStats": f"https://github-profile-summary-cards.vercel.app/api/cards/stats?username={username}&theme=dark",
@@ -79,6 +86,7 @@ def get_stat_urls(username):
 
 
 def open_html_viewer():
+    """Open the generated HTML report in the platform-specific viewer."""
     html_file = os.path.join(".temp", "index.html")
     if platform.system() == "Linux":
         try:
@@ -106,6 +114,7 @@ def open_html_viewer():
 
 
 def main():
+    """Run the full extraction workflow end-to-end."""
     display_banner()
     prompt_for_token()
     username = get_username()

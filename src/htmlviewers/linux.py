@@ -1,3 +1,4 @@
+"""Linux HTML viewer backed by pywebview/WebKit."""
 import webview  # type: ignore
 import os
 import sys
@@ -9,7 +10,7 @@ os.environ.setdefault("GALLIUM_DRIVER", "llvmpipe")
 
 
 def showHTMLLinux():
-    # Functions & Global Variables
+    """Open the generated HTML report in a pywebview window."""
     app_name = "GitHubUserDataExtractor - HTML Viewer"
     html_file = os.path.abspath(os.path.join(
         ".temp", "index.html"))
