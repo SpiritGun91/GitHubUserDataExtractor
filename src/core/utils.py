@@ -30,9 +30,11 @@ def get_auth_headers():
 
 
 def fetch_as_data_uri(url):
-    """Fetch a remote image and return it as a base64 data URI so it can be
-    embedded directly in the HTML file (needed when the page is served via
-    file:// and WebKit would otherwise block external requests)."""
+    """Fetch a remote image and return it as a base64 data URI.
+
+    Embeds the image directly in the HTML file (needed when the page is served
+    via file:// and WebKit would otherwise block external requests).
+    """
     try:
         resp = requests.get(url, timeout=15)
         resp.raise_for_status()
