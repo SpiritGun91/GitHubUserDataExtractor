@@ -7,7 +7,7 @@ from colorama import Fore, Style
 from requests.exceptions import HTTPError, RequestException
 
 
-class colors:
+class colors:  # pylint: disable=invalid-name,too-few-public-methods
     """ANSI color constants used for terminal output."""
 
     HEADER = Fore.MAGENTA
@@ -72,14 +72,15 @@ def fetch_and_print_data(username):
         print(f"{colors.FAIL}Unexpected error: {err}{colors.ENDC}")
 
 
-def show_events_and_graphs(urls):
+def show_events_and_graphs():
     """Print a confirmation that graphs are available in the report."""
     print(
         f"\nGraphs available in Received Events [{colors.GREEN}✓{colors.ENDC}]"
     )
 
 
-def generate_html_event_row(avatar, login, event_type, repo_name, repo_url, badge_class, action_text):
+def generate_html_event_row(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+    avatar, login, repo_name, repo_url, badge_class, action_text):
     """Return the HTML markup for a single received-event row."""
     return f"""
     <div class="event-row d-flex align-items-center shadow-sm">
@@ -269,7 +270,6 @@ def _build_events_html(events):
         rows.append(generate_html_event_row(
             avatar,
             login,
-            event_type,
             repo_name,
             repo_url,
             badge_class,
@@ -296,40 +296,55 @@ def _build_report_html(user_data, events_html, urls):
     )
 
 
-def create_and_display_html_user_events(username, urls):
-    """Build the user's HTML report from profile data and received events."""
-    events_url = f"https://api.github.com/users/{username}/received_events"
-    html_path = ".temp/index.html"
-
-    print(f"Generating HTML report... [{colors.GREEN}✓{colors.ENDC}]\n")
-
-    url = f"https://api.github.com/users/{username}"
+def _fetch_json(url):
+    """Fetch JSON from a URL and return parsed data, or None on failure."""
     try:
-        user_response = requests.get(url, headers=get_auth_headers(), timeout=10)
-        user_response.raise_for_status()
-        user_data = user_response.json()
-
+        response = requests.get(url, headers=get_auth_headers(), timeout=10)
+        response.raise_for_status()
+        return response.json()
     except HTTPError as http_err:
         print(f"{colors.FAIL}HTTP error occurred: {http_err}{colors.ENDC}")
-        return
     except (RequestException, ValueError) as err:
         print(f"{colors.FAIL}Unexpected error: {err}{colors.ENDC}")
-        return
+    return None
 
+
+def _prepare_output_path(html_path):
+    """Create output directory and remove any existing report file."""
     os.makedirs(os.path.dirname(html_path), exist_ok=True)
     if os.path.exists(html_path):
         os.remove(html_path)
 
-    try:
-        events_response = requests.get(events_url, headers=get_auth_headers(), timeout=10)
-        events_response.raise_for_status()
-        events = events_response.json()
-        events_html = _build_events_html(events)
-        report_html = _build_report_html(user_data, events_html, urls)
 
-        with open(html_path, "w", encoding="utf_8") as f:
-            f.write(report_html)
-    except HTTPError as http_err:
-        print(f"{colors.FAIL}HTTP error occurred: {http_err}{colors.ENDC}")
-    except (RequestException, OSError, ValueError) as err:
+def _write_report_file(html_path, report_html):
+    """Write report HTML to disk, returning True on success."""
+    try:
+        with open(html_path, "w", encoding="utf_8") as file_obj:
+            file_obj.write(report_html)
+        return True
+    except OSError as err:
         print(f"{colors.FAIL}Unexpected error: {err}{colors.ENDC}")
+    return False
+
+
+def create_and_display_html_user_events(username, urls):
+    """Build the user's HTML report from profile data and received events."""
+    user_url = f"https://api.github.com/users/{username}"
+    events_url = f"{user_url}/received_events"
+    html_path = ".temp/index.html"
+
+    print(f"Generating HTML report... [{colors.GREEN}✓{colors.ENDC}]\n")
+
+    user_data = _fetch_json(user_url)
+    if user_data is None:
+        return
+
+    events = _fetch_json(events_url)
+    if events is None:
+        return
+
+    _prepare_output_path(html_path)
+
+    events_html = _build_events_html(events)
+    report_html = _build_report_html(user_data, events_html, urls)
+    _write_report_file(html_path, report_html)

@@ -2,11 +2,13 @@
 import sys
 import os
 from PyQt5.QtCore import QUrl
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QMessageBox, QDesktopWidget
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QVBoxLayout, QWidget, QMessageBox, QDesktopWidget
+)
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 
-class HTMLViewer(QMainWindow):
+class HTMLViewer(QMainWindow):  # pylint: disable=too-few-public-methods
     """Main window that renders the generated HTML report."""
 
     def __init__(self, html_path):
@@ -49,7 +51,7 @@ class HTMLViewer(QMainWindow):
         self.move(frame_geometry.topLeft())
 
 
-def showHTMLWindow():
+def show_html_window():
     """Launch the PyQt5 application and display the HTML content."""
     app = QApplication(sys.argv)
 

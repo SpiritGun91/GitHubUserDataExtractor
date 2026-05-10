@@ -1,7 +1,7 @@
 """Linux HTML viewer backed by pywebview/WebKit."""
-import webview  # type: ignore
 import os
 import sys
+import webview  # type: ignore
 
 # Suppress dconf "no database" warnings from GTK/WebKit
 os.environ.setdefault("DCONF_PROFILE", "/dev/null")
@@ -9,7 +9,7 @@ os.environ.setdefault("DCONF_PROFILE", "/dev/null")
 os.environ.setdefault("GALLIUM_DRIVER", "llvmpipe")
 
 
-def showHTMLLinux():
+def show_html_linux():
     """Open the generated HTML report in a pywebview window."""
     app_name = "GitHubUserDataExtractor - HTML Viewer"
     html_file = os.path.abspath(os.path.join(
