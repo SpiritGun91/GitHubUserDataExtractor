@@ -1,3 +1,4 @@
+import base64
 import os
 import platform
 import requests
@@ -21,11 +22,32 @@ def clear():
     os.system("cls" if platform.system() == "Windows" else "clear")
 
 
+def get_auth_headers():
+    token = os.environ.get("GITHUB_TOKEN", "").strip()
+    if token:
+        return {"Authorization": f"Bearer {token}"}
+    return {}
+
+
+def fetch_as_data_uri(url):
+    """Fetch a remote image and return it as a base64 data URI so it can be
+    embedded directly in the HTML file (needed when the page is served via
+    file:// and WebKit would otherwise block external requests)."""
+    try:
+        resp = requests.get(url, timeout=15)
+        resp.raise_for_status()
+        content_type = resp.headers.get("Content-Type", "image/svg+xml").split(";")[0].strip()
+        encoded = base64.b64encode(resp.content).decode("ascii")
+        return f"data:{content_type};base64,{encoded}"
+    except Exception:
+        return url  # fall back to original URL on any failure
+
+
 def fetch_and_print_data(username):
     print(f"Fetching data for user: {colors.FAIL}{username}{colors.ENDC}")
     url = f"https://api.github.com/users/{username}"
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(url, headers=get_auth_headers(), timeout=10)
         response.raise_for_status()
         data = response.json()
         print(f"\n{colors.WARNING}User Data:{colors.ENDC}")
@@ -65,7 +87,7 @@ def create_and_display_html_user_events(username, urls):
 
     url = f"https://api.github.com/users/{username}"
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(url, headers=get_auth_headers(), timeout=10)
         response.raise_for_status()
         user_data = response.json()
 
@@ -90,7 +112,7 @@ def create_and_display_html_user_events(username, urls):
         os.remove(html_path)
 
     try:
-        response = requests.get(events_url, timeout=10)
+        response = requests.get(events_url, headers=get_auth_headers(), timeout=10)
         response.raise_for_status()
         events = response.json()
 
@@ -256,14 +278,18 @@ def create_and_display_html_user_events(username, urls):
                         avatar, login, event_type, repo_name,
                         repo_url, badge_class, action_text))
 
+            langs_src = fetch_as_data_uri(urls['mostUsedLanguages'])
+            stats_src = fetch_as_data_uri(urls['githubStats'])
+            streak_src = fetch_as_data_uri(urls['streakContributionsLS'])
+
             f.write(f"""</div>
     <div class="col-sm-12 col-md-4 col-lg-4">
         <h4 class="mb-4">Contribution Insights</h4>
         <div class="row justify-content-center align-items-left graph-container">
             <div class="col-12">
-                <img class="img-fluid w-100" src="{urls['mostUsedLanguages']}" alt="Top Languages">
-                <img class="img-fluid w-100" src="{urls['githubStats']}" alt="GitHub Stats">
-                <img class="img-fluid w-100" src="{urls['streakContributionsLS']}" alt="Streak Stats">
+                <img class="img-fluid w-100" src="{langs_src}" alt="Top Languages">
+                <img class="img-fluid w-100" src="{stats_src}" alt="GitHub Stats">
+                <img class="img-fluid w-100" src="{streak_src}" alt="Streak Stats">
             </div>
         </div>
     </div>

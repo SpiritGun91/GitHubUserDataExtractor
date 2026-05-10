@@ -24,6 +24,41 @@ def display_banner():
         f"Website  : {colors.CYAN}https://quantumbytestudios.in{colors.ENDC}\n")
 
 
+TOKEN_FILE = os.path.join(os.path.dirname(__file__), ".github_token")
+
+
+def load_saved_token():
+    try:
+        with open(TOKEN_FILE, "r", encoding="utf-8") as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        return ""
+
+
+def save_token(token):
+    with open(TOKEN_FILE, "w", encoding="utf-8") as f:
+        f.write(token)
+
+
+def prompt_for_token():
+    saved = load_saved_token()
+    if saved:
+        os.environ["GITHUB_TOKEN"] = saved
+        print(f"{colors.GREEN}Saved token loaded — authenticated rate limit active (5,000 req/hr).{colors.ENDC}\n")
+        return
+
+    token = input(
+        f"Enter a GitHub Access Token (leave blank to use unauthenticated): {colors.WARNING}"
+    ).strip()
+    print(colors.ENDC, end="")
+    if token:
+        os.environ["GITHUB_TOKEN"] = token
+        save_token(token)
+        print(f"{colors.GREEN}Token set and saved — authenticated rate limit active (5,000 req/hr).{colors.ENDC}\n")
+    else:
+        print(f"{colors.WARNING}No token provided — unauthenticated rate limit applies (60 req/hr).{colors.ENDC}\n")
+
+
 def get_username():
     username = input(
         f"Enter a GitHub Username: {colors.WARNING}").strip().lower()
@@ -39,8 +74,8 @@ def get_username():
 
 def get_stat_urls(username):
     return {
-        "mostUsedLanguages": f"https://github-readme-stats.vercel.app/api/top-langs?username={username}&langs_count=8",
-        "githubStats": f"https://github-readme-stats.vercel.app/api?username={username}&show_icons=true&locale=en",
+        "mostUsedLanguages": f"https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username={username}&theme=dark",
+        "githubStats": f"https://github-profile-summary-cards.vercel.app/api/cards/stats?username={username}&theme=dark",
         "streakContributionsLS": f"https://streak-stats.demolab.com/?user={username}",
         "contributorGraphOne": f"https://github-readme-activity-graph.vercel.app/graph?username={username}&bg_color=000000&color=ffffff&line=ffffff&point=ffffff&area=true&hide_border=true",
         "contributorGraphTwo": f"https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username={username}&theme=dark"
@@ -74,6 +109,7 @@ def open_html_viewer():
 
 def main():
     display_banner()
+    prompt_for_token()
     username = get_username()
     urls = get_stat_urls(username)
 

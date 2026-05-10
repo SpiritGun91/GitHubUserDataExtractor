@@ -2,12 +2,17 @@ import webview  # type: ignore
 import os
 import sys
 
+# Suppress dconf "no database" warnings from GTK/WebKit
+os.environ.setdefault("DCONF_PROFILE", "/dev/null")
+# Suppress MESA ZINK (Vulkan-backed OpenGL) errors — fall back to software renderer
+os.environ.setdefault("GALLIUM_DRIVER", "llvmpipe")
+
 
 def showHTMLLinux():
     # Functions & Global Variables
     app_name = "GitHubUserDataExtractor - HTML Viewer"
     html_file = os.path.abspath(os.path.join(
-        "Data", "ReceivedEvents", "index.html"))
+        ".temp", "index.html"))
 
     # Check if the file exists
     if not os.path.exists(html_file):

@@ -2,3 +2,4 @@ __pycache__/
 .vscode
 received_events/
 *.html
+src/.github_token
