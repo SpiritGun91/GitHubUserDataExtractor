@@ -1,16 +1,12 @@
 import os
+import sys
 import platform
 import core.utils as session
 from core.utils import colors
 
-if platform.system() == "Windows":
-    import htmlviewers.win as windows
-else:
-    import htmlviewers.linux as linux
-
 
 def display_banner():
-    os.system("cls" if platform.system() == "Windows" else "clear")
+    session.clear()
     banner = r'''
   ____ _ _   _   _       _       _   _                 ____        _
  / ___(_) |_| | | |_   _| |__   | | | |___  ___ _ __  |  _ \  __ _| |_ __ _
@@ -65,10 +61,10 @@ def get_username():
     print(colors.ENDC, end="")
     if not username:
         print(f"{colors.RED}Username cannot be empty!{colors.ENDC}")
-        exit(1)
+        sys.exit(1)
     if username == "exit":
         print(colors.RED + 'Bye.' + colors.ENDC)
-        exit(0)
+        sys.exit(0)
     return username
 
 
@@ -86,12 +82,14 @@ def open_html_viewer():
     html_file = os.path.join(".temp", "index.html")
     if platform.system() == "Linux":
         try:
+            import htmlviewers.linux as linux
             linux.showHTMLLinux()
         except ImportError:
             print(
                 f"{colors.RED}Error: HTMLViewer_Linux module not found.{colors.ENDC}")
     elif platform.system() == "Windows":
         try:
+            import htmlviewers.win as windows
             windows.showHTMLWindow()
         except ImportError:
             print(

@@ -3,7 +3,7 @@ import os
 import platform
 import requests
 from colorama import Fore, Style
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, RequestException
 
 
 class colors:
@@ -19,7 +19,11 @@ class colors:
 
 
 def clear():
-    os.system("cls" if platform.system() == "Windows" else "clear")
+    # Avoid spawning shell commands for terminal clear operations.
+    if platform.system() == "Windows":
+        print("\033[2J\033[H", end="")
+    else:
+        print("\033c", end="")
 
 
 def get_auth_headers():
@@ -42,7 +46,7 @@ def fetch_as_data_uri(url):
         content_type = resp.headers.get("Content-Type", "image/svg+xml").split(";")[0].strip()
         encoded = base64.b64encode(resp.content).decode("ascii")
         return f"data:{content_type};base64,{encoded}"
-    except Exception:
+    except (RequestException, ValueError, TypeError):
         return url  # fall back to original URL on any failure
 
 
@@ -60,7 +64,7 @@ def fetch_and_print_data(username):
 
     except HTTPError as http_err:
         print(f"{colors.FAIL}HTTP error occurred: {http_err}{colors.ENDC}")
-    except Exception as err:
+    except (RequestException, ValueError) as err:
         print(f"{colors.FAIL}Unexpected error: {err}{colors.ENDC}")
 
 
@@ -106,7 +110,7 @@ def create_and_display_html_user_events(username, urls):
     except HTTPError as http_err:
         print(f"{colors.FAIL}HTTP error occurred: {http_err}{colors.ENDC}")
         return
-    except Exception as err:
+    except (RequestException, ValueError) as err:
         print(f"{colors.FAIL}Unexpected error: {err}{colors.ENDC}")
         return
 
@@ -302,5 +306,5 @@ def create_and_display_html_user_events(username, urls):
 """)
     except HTTPError as http_err:
         print(f"{colors.FAIL}HTTP error occurred: {http_err}{colors.ENDC}")
-    except Exception as err:
+    except (RequestException, OSError, ValueError) as err:
         print(f"{colors.FAIL}Unexpected error: {err}{colors.ENDC}")

@@ -64,5 +64,5 @@ def showHTMLWindow():
         os.remove(html_file_path)
     except FileNotFoundError:
         print(f"Warning: HTML file '{html_file_path}' not found to delete.")
-    except Exception as e:
+    except OSError as e:
         print(f"Error deleting HTML file: {e}")
