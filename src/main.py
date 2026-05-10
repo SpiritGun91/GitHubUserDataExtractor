@@ -90,11 +90,25 @@ def get_username():
 def get_stat_urls(username):
     """Return the mapping of stat-card URLs for the given username."""
     return {
-        "mostUsedLanguages": f"https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username={username}&theme=dark",  # pylint: disable=line-too-long
-        "githubStats": f"https://github-profile-summary-cards.vercel.app/api/cards/stats?username={username}&theme=dark",  # pylint: disable=line-too-long
+        "mostUsedLanguages": (
+            "https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language"
+            f"?username={username}&theme=dark"
+        ),
+        "githubStats": (
+            "https://github-profile-summary-cards.vercel.app/api/cards/stats"
+            f"?username={username}&theme=dark"
+        ),
         "streakContributionsLS": f"https://streak-stats.demolab.com/?user={username}",
-        "contributorGraphOne": f"https://github-readme-activity-graph.vercel.app/graph?username={username}&bg_color=000000&color=ffffff&line=ffffff&point=ffffff&area=true&hide_border=true",  # pylint: disable=line-too-long
-        "contributorGraphTwo": f"https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username={username}&theme=dark"  # pylint: disable=line-too-long
+        "contributorGraphOne": (
+            "https://github-readme-activity-graph.vercel.app/graph"
+            f"?username={username}"
+            "&bg_color=000000&color=ffffff&line=ffffff"
+            "&point=ffffff&area=true&hide_border=true"
+        ),
+        "contributorGraphTwo": (
+            "https://github-profile-summary-cards.vercel.app/api/cards/profile-details"
+            f"?username={username}&theme=dark"
+        ),
     }
 
 
