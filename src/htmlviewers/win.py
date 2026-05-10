@@ -9,6 +9,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 
 class HTMLViewer(QMainWindow):  # pylint: disable=too-few-public-methods
+
     """Main window that renders the generated HTML report."""
 
     def __init__(self, html_path):
